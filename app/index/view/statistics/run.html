@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>统计概览</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="/static/component/pear/css/pear.css" />
+    <link rel="stylesheet" href="/static/admin/css/other/console1.css" />
+    <style>
+        div::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+
+        div::-webkit-scrollbar-track {
+            background: rgb(239, 239, 239);
+            border-radius: 2px;
+        }
+
+        div::-webkit-scrollbar-thumb {
+            background: #bfbfbf;
+            border-radius: 10px;
+        }
+
+        div::-webkit-scrollbar-thumb:hover {
+            background: #333;
+        }
+
+        div::-webkit-scrollbar-corner {
+            background: #179a16;
+        }
+
+        .open-skin {
+            background-color: #3f3f3f !important;
+        }
+    </style>
+</head>
+
+<body class="pear-container">
+    <div class="layui-card">
+        <div class="layui-card-body">
+            <form class="layui-form" action="">
+                <div class="layui-form-item">
+                    <div class="layui-form-item layui-inline">
+                        <label class="layui-form-label">日期</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="date" value="{$date}" placeholder="" class="layui-input date">
+                        </div>
+                    </div>
+                    <div class="layui-form-item layui-inline">
+                        <label class="layui-form-label">应用</label>
+                        <div class="layui-input-inline">
+                            <select name="project" lay-verify="required" lay-search>
+                                <option value="0">全部</option>
+                                {foreach name="project_list" item="name" key="id"}
+                                <option value="{$id}" {if condition="$id == $project" }selected{/if}>{$name}</option>
+                                {/foreach}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-form-item layui-inline">
+                        <button class="pear-btn pear-btn-md pear-btn-primary" lay-submit lay-filter="query">
+                            <i class="layui-icon layui-icon-search"></i>
+                            查询
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="layui-row layui-col-space10">
+        <div class="layui-col-xs12 layui-col-md4">
+            <div class="layui-card top-panel">
+                <div class="layui-card-header">订阅渠道</div>
+                <div class="layui-card-body">
+                    <div class="layui-row layui-col-space5">
+                        <div class="layui-col-xs8 layui-col-md8 top-panel-number" style="color: #28333E;" id="channel">
+                            0
+                        </div>
+                        <div class="layui-col-xs4 layui-col-md4 top-panel-tips">
+                            <svg t="1660639851537" class="icon" viewBox="0 0 1024 1024" version="1.1"
+                                xmlns="http://www.w3.org/2000/svg" p-id="9205" width="200" height="200">
+                                <path
+                                    d="M512 68.266667C268.049067 68.266667 68.266667 238.08 68.266667 450.56l0.068266 6.638933c2.833067 143.445333 97.723733 270.4384 241.408 333.789867l4.778667 2.048V921.6l0.1024 2.6112c1.8944 26.504533 32.768 41.0624 54.545067 24.661333l154.4192-116.155733 3.003733-0.068267C763.869867 826.043733 955.733333 658.7904 955.733333 450.56 955.733333 238.08 755.950933 68.266667 512 68.266667z m0 68.266666c208.4864 0 375.466667 141.9264 375.466667 314.026667 0 172.100267-166.980267 314.026667-375.466667 314.026667l-3.157333 0.1536a34.133333 34.133333 0 0 0-17.3568 6.7072l-108.6976 81.732266v-83.2512a34.133333 34.133333 0 0 0-22.289067-32.017066C224.938667 687.735467 136.533333 575.317333 136.533333 450.56 136.533333 278.459733 303.5136 136.533333 512 136.533333z"
+                                    fill="#444444" p-id="9206"></path>
+                                <path
+                                    d="M290.133333 477.866667a34.133333 34.133333 0 0 1 30.344534 18.500266l-1.621334-2.423466c38.126933 58.7776 95.8976 92.8256 165.512534 94.72l6.161066 0.085333v68.266667c-93.866667 0-173.687467-44.373333-225.3824-120.541867l-3.566933-5.358933 0.170667-0.119467A34.133333 34.133333 0 0 1 290.133333 477.866667z"
+                                    fill="#00B386" p-id="9207"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-xs12 layui-col-md4">
+            <div class="layui-card top-panel">
+                <div class="layui-card-header">订阅次数</div>
+                <div class="layui-card-body">
+                    <div class="layui-row layui-col-space5">
+                        <div class="layui-col-xs8 layui-col-md8 top-panel-number" style="color: #28333E;"
+                            id="subscription">
+                            0
+                        </div>
+                        <div class="layui-col-xs4 layui-col-md4  top-panel-tips">
+                            <svg t="1660639886988" class="icon" viewBox="0 0 1024 1024" version="1.1"
+                                xmlns="http://www.w3.org/2000/svg" p-id="12135" width="200" height="200">
+                                <path
+                                    d="M887.466667 937.301333l-375.466667-110.364444-375.466667 110.364444v-841.955555h750.933334z m-375.466667-164.977777l323.128889 94.549333V147.911111H188.871111v718.961778z"
+                                    fill="#1DCCA1" p-id="12136"></path>
+                                <path d="M341.333333 433.493333h341.333334v56.888889H341.333333z" fill="#1DCCA1"
+                                    p-id="12137"></path>
+                                <path d="M483.555556 291.271111h56.888888v341.333333h-56.888888z" fill="#1DCCA1"
+                                    p-id="12138"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-xs12 layui-col-md4">
+            <div class="layui-card top-panel">
+                <div class="layui-card-header">推送次数</div>
+                <div class="layui-card-body">
+                    <div class="layui-row layui-col-space5">
+                        <div class="layui-col-xs8 layui-col-md8 top-panel-number" style="color: #28333E;" id="push">
+                            0
+                        </div>
+                        <div class="layui-col-xs4 layui-col-md4 top-panel-tips">
+                            <svg t="1660639749415" class="icon" viewBox="0 0 1024 1024" version="1.1"
+                                xmlns="http://www.w3.org/2000/svg" p-id="3251" width="200" height="200">
+                                <path
+                                    d="M669.728 960.512l-219.616-178.432 60.8-74.08 110.464 89.824L766.08 350.72 376.064 755.328v200.352h-96v-238.816L703.04 278.048 241.056 475.904l95.104 83.776-63.712 71.552L64 447.648 960 64z"
+                                    fill="#0590DF" p-id="3252"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="layui-row layui-col-space12">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-body">
+                    <div class="layui-tab custom-tab layui-tab-brief">
+                        <div id="statisticsChannel" style="background-color:#ffffff;min-height:300px;padding: 10px;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-body">
+                    <div class="layui-tab custom-tab layui-tab-brief">
+                        <div id="statisticsEvent"
+                            style="background-color:#ffffff;min-height:300px;padding: 10px;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-body">
+                    <div class="layui-tab custom-tab layui-tab-brief">
+                        <div id="statisticsPush" style="background-color:#ffffff;min-height:300px;padding: 10px;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="/static/component/layui/layui.js"></script>
+    <script src="/static/component/pear/pear.js"></script>
+    <script src="/static/common/js/jquery.min.js"></script>
+    <script src="/static/common/js/echarts-5.3.2.min.js"></script>
+    <script>
+        layui.use(['count', 'topBar', 'laydate'], function () {
+            var count = layui.count;
+            var laydate = layui.laydate;
+
+            laydate.render({
+                elem: ".date",
+                type: 'date',
+                trigger: 'click',
+                format: 'yyyy-MM-dd',
+            })
+
+            count.up("channel", {
+                time: 20,
+                num: eval("(" + `{$statisticData.channel??0}` + ")"),
+                regulator: 1
+            });
+            count.up("subscription", {
+                time: 20,
+                num: eval("(" + `{$statisticData.subscription??0}` + ")"),
+                regulator: 1
+            });
+            count.up("push", {
+                time: 20,
+                num: eval("(" + `{$statisticData.push??0}` + ")"),
+                regulator: 1
+            });
+
+            statisticsChannelObject = echarts.init(document.getElementById('statisticsChannel'));
+            statisticsEventObject = echarts.init(document.getElementById('statisticsEvent'));
+            statisticsPushObject = echarts.init(document.getElementById('statisticsPush'));
+
+            chartList = eval("(" + `{$chartList}` + ")");
+
+            statistics('订阅渠道', chartList.time, chartList.channel, '46,204,113', statisticsChannelObject);
+            statistics('订阅事件', chartList.time, chartList.event, '250,200,88', statisticsEventObject);
+            statistics('推送次数', chartList.time, chartList.push, '40,142,222', statisticsPushObject);
+
+            echarts.connect([statisticsChannelObject, statisticsEventObject, statisticsPushObject]);
+
+            window.onresize = function () {
+                statisticsChannelObject.resize();
+                statisticsEventObject.resize();
+                statisticsPushObject.resize();
+            }
+
+            function statistics(title, x, y, color, object) {
+                var option = {
+                    backgroundColor: '#fff',
+                    title: {
+                        text: title,
+                        left: 'center'
+                    },
+                    tooltip: {
+                        trigger: 'axis',
+                        axisPointer: {
+                            type: 'cross',
+                            label: {
+                                backgroundColor: '#6a7985'
+                            }
+                        },
+                        confine: true,
+                        position: function (point, params, dom, rect, size) {
+                            return [point[0], '10%'];
+                        },
+                        extraCssText: 'width:150px;'
+                    },
+                    dataZoom: [
+                        {
+                            type: 'inside',
+                            start: 0,
+                            end: 100
+                        },
+                        {
+                            height: 25,
+                            start: 0,
+                            end: 100
+                        }
+                    ],
+                    grid: {
+                        top: '10%',
+                        left: '3%',
+                        right: '4%',
+                        bottom: '15%',
+                        containLabel: true
+                    },
+                    xAxis: [{
+                        type: 'category',
+                        boundaryGap: false,
+                        axisLine: {
+                            show: false
+                        },
+                        axisTick: {
+                            show: false
+                        },
+                        axisLabel: {
+                            margin: 10,
+                            textStyle: {
+                                fontSize: 14,
+                                color: 'rgba(#999)',
+                            }
+                        },
+                        splitLine: {
+                            show: true,
+                            lineStyle: {
+                                color: '#939ab6',
+                                opacity: .15
+                            }
+                        },
+                        data: x
+                    }],
+                    yAxis: [{
+                        type: 'value',
+                        min: 0,
+                        axisTick: {
+                            show: false
+                        },
+                        axisLine: {
+                            show: false
+                        },
+                        axisLabel: {
+                            margin: 10,
+                            textStyle: {
+                                fontSize: 14,
+                                color: '#999',
+                            }
+                        },
+                        splitLine: {
+                            show: false
+                        }
+                    }],
+                    series: [{
+                        name: title,
+                        type: 'line',
+                        z: 3,
+                        showSymbol: false,
+                        smoothMonotone: 'x',
+                        lineStyle: {
+                            width: 3,
+                            color: {
+                                type: 'linear',
+                                x: 0,
+                                y: 0,
+                                x2: 0,
+                                y2: 1,
+                                colorStops: [{
+                                    offset: 0,
+                                    color: 'rgba(' + color + ')' // 100% 处的颜色
+                                }, {
+                                    offset: 1,
+                                    color: 'rgba(' + color + ')' // 0% 处的颜色
+                                }]
+                            },
+                            shadowBlur: 4,
+                            shadowColor: 'rgba(' + color + ',.2)',
+                            shadowOffsetY: 4
+                        },
+                        areaStyle: {
+                            normal: {
+                                color: {
+                                    type: 'linear',
+                                    x: 0,
+                                    y: 0,
+                                    x2: 0,
+                                    y2: 1,
+                                    colorStops: [{
+                                        offset: 0,
+                                        color: 'rgba(' + color + ',0.5)' // 100% 处的颜色
+                                    }, {
+                                        offset: 1,
+                                        color: 'rgba(' + color + ',0.1)' // 0% 处的颜色
+                                    }]
+                                }
+                            }
+                        },
+                        itemStyle: {
+                            color: 'rgba(' + color + ')'
+                        },
+                        smooth: true,
+                        data: y
+                    }]
+                };
+                object.setOption(option);
+            }
+        });
+    </script>
+</body>
+
+</html>

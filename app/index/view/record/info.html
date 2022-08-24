@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="/static/component/pear/css/pear.css" />
+    <script src="/static/component/layui/layui.js"></script>
+    <script src="/static/component/pear/pear.js"></script>
+</head>
+
+<body>
+    <div class="layui-card">
+        <div class="layui-card-body">
+            <pre class="layui-code" lay-title="详细信息" lay-skin="notepad">{$data}</pre>
+        </div>
+    </div>
+    <script>
+        layui.code({
+            elem: 'pre'
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="/static/component/pear/css/pear.css" />
+    <script src="/static/component/layui/layui.js"></script>
+    <script src="/static/component/pear/pear.js"></script>
+</head>
+
+<body class="pear-container">
+    <div class="layui-card">
+        <div class="layui-card-body">
+            <form class="layui-form" action="">
+                <div class="layui-form-item">
+
+                    <div class="layui-form-item layui-inline">
+                        <label class="layui-form-label">应用</label>
+                        <div class="layui-input-inline">
+                            <select name="project" lay-verify="required" lay-search>
+                                <option value="0">全部</option>
+                                {foreach name="project_list" item="name" key="id"}
+                                <option value="{$id}">{$name}</option>
+                                {/foreach}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-form-item layui-inline">
+                        <label class="layui-form-label">订阅渠道</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="channel" placeholder="" class="layui-input">
+                        </div>
+                    </div>
+                    <div class="layui-form-item layui-inline">
+                        <label class="layui-form-label">订阅事件</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="event" placeholder="" class="layui-input">
+                        </div>
+                    </div>
+                    <div class="layui-form-item layui-inline">
+                        <button class="pear-btn pear-btn-md pear-btn-primary" lay-submit lay-filter="query">
+                            <i class="layui-icon layui-icon-search"></i>
+                            查询
+                        </button>
+                        <button type="reset" class="pear-btn pear-btn-md">
+                            <i class="layui-icon layui-icon-refresh"></i>
+                            重置
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="layui-card">
+        <div class="layui-card-body">
+            <table id="dataTable" lay-filter="dataTable"></table>
+        </div>
+    </div>
+
+    <script type="text/html" id="options">
+        <button class="pear-btn pear-btn-primary pear-btn-sm" lay-event="info"><i class="layui-icon layui-icon-fonts-code"></i></button>
+    </script>
+    <script>
+        layui.use(['table', 'form', 'jquery', 'common', 'laydate'], function () {
+            let table = layui.table;
+            let form = layui.form;
+            let $ = layui.jquery;
+            let common = layui.common;
+            let laydate = layui.laydate;
+            let MODULE_PATH = "/{:request()->app}/record/";
+
+            let cols = [
+                [{
+                    field: "id",
+                    title: "id",
+                    unresize: "true",
+                    align: "center"
+                }, {
+                    field: "name",
+                    title: "应用",
+                    unresize: "true",
+                    align: "center"
+                }, {
+                    field: "channel",
+                    title: "订阅渠道",
+                    unresize: "true",
+                    align: "center"
+                }, {
+                    field: "event",
+                    title: "订阅事件",
+                    unresize: "true",
+                    align: "center"
+                }, {
+                    field: "subscription",
+                    title: "订阅数量",
+                    unresize: "true",
+                    align: "center"
+                }, {
+                    field: "create_time",
+                    title: "推送时间",
+                    unresize: "true",
+                    align: "center"
+                }, {
+                    title: '操作',
+                    toolbar: '#options',
+                    unresize: true,
+                    align: 'center',
+                    width: 180,
+                }]
+            ]
+
+            table.render({
+                elem: '#dataTable',
+                url: MODULE_PATH + 'index',
+                page: true,
+                limit: 10,
+                parseData: function (params) {
+                    return {
+                        "code": params.code,
+                        "msg": params.msg,
+                        "count": params.data.total,
+                        "data": params.data.data
+                    };
+                },
+                request: {
+                    pageName: 'page',
+                    limitName: 'limit'
+                },
+                response: {
+                    statusCode: 200
+                },
+                cols: cols,
+                cellMinWidth: 100,
+                skin: 'line',
+                toolbar: '#toolbar',
+                defaultToolbar: [{
+                    title: '刷新',
+                    layEvent: 'refresh',
+                    icon: 'layui-icon-refresh',
+                }, 'filter', 'print', 'exports']
+            });
+
+            table.on('tool(dataTable)', function (obj) {
+                if (obj.event === 'info') {
+                    window.info(obj);
+                }
+            });
+
+            table.on('toolbar(dataTable)', function (obj) {
+                if (obj.event === 'refresh') {
+                    window.refresh();
+                }
+            });
+
+            form.on('submit(query)', function (data) {
+                table.reload('dataTable', {
+                    where: data.field,
+                    page: { curr: 1 }
+                })
+
+                return false;
+            });
+
+            //弹出窗设置 自己设置弹出百分比
+            function screen() {
+                if (typeof width !== 'number' || width === 0) {
+                    width = $(window).width() * 0.8;
+                }
+                if (typeof height !== 'number' || height === 0) {
+                    height = $(window).height() - 20;
+                }
+                return [width + 'px', height + 'px'];
+            }
+
+            window.info = function (obj) {
+                layer.open({
+                    type: 2,
+                    maxmin: true,
+                    title: '推送数据',
+                    shade: 0.1,
+                    area: screen(),
+                    content: MODULE_PATH + 'info?id=' + obj.data['id']
+                });
+            }
+
+            window.refresh = function (param) {
+                table.reload('dataTable');
+            }
+        })
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8">
+    <title>Pusher-demo</title>
+</head>
+
+<body>
+    <div id="data"></div>
+    <script src="https://cdn.staticfile.org/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://js.pusher.com/7.2.0/pusher.min.js"></script>
+    <script>
+        function push(params) {
+            $("#data").prepend("<p><center>" + params + "</center></p>");
+        }
+
+        window.onload = function () {
+            // connect
+            var id = Math.ceil(Math.random() * 100);
+            var pusher = new Pusher('ecc1dcdecd380a38cadc74cd9d0fb9bf', {
+                forceTLS: false,
+                wsHost: '127.0.0.1',
+                wsPort: 8790,
+                channelAuthorization: {
+                    endpoint: 'http://127.0.0.1:8789/api/connect/auth',
+                    params: {
+                        access_key: 'ecc1dcdecd380a38cadc74cd9d0fb9bf',
+                        user_id: id,
+                        user_info: JSON.stringify({ 'name': '张三' + id })
+                    }
+                }
+            })
+
+
+
+            // error
+            pusher.connection.bind("error", function (err) {
+                push(JSON.stringify(err));
+
+                // disconnect
+                if (-1 === err.data.code) {
+                    pusher.connection.disconnect();
+                }
+            });
+
+
+
+            // Public channels
+            var public = pusher.subscribe('public');
+
+            // Subscription succeeded
+            public.bind("pusher:subscription_succeeded", () => {
+                push('public subscription_succeeded');
+            });
+            // custom event
+            public.bind('message', function (data) {
+                push('public-message：' + JSON.stringify(data));
+            });
+
+
+
+            // Private channels
+            var private = pusher.subscribe('private-message');
+
+            // Subscription succeeded
+            public.bind("pusher:subscription_succeeded", () => {
+                push('private subscription_succeeded');
+            });
+            // custom event
+            private.bind('client-message', function (data) {
+                push('private-client-message：' + JSON.stringify(data));
+            });
+
+            // Private channels (Client push)
+            var client = pusher.subscribe('private-push');
+            // custom event
+            client.bind('message', function (data) {
+                push('client-push-message：' + JSON.stringify(data));
+                private.trigger('client-message', JSON.stringify(data));
+            });
+
+
+
+            // Presence channels
+            var presence = pusher.subscribe("presence-message");
+
+            // Subscription succeeded
+            presence.bind("pusher:subscription_succeeded", (data) => {
+                push('presence subscription_succeeded：' + JSON.stringify(data));
+            });
+
+            // add member
+            presence.bind("pusher:member_added", (data) => {
+                push('member_added：' + JSON.stringify(data));
+            });
+
+            // remove member
+            presence.bind("pusher:member_removed", (data) => {
+                push('member_removed：' + JSON.stringify(data));
+            });
+
+            // custom event
+            presence.bind("message", (data) => {
+                push('member_removed：' + JSON.stringify(data));
+            });
+        };
+    </script>
+</body>
+
+</html>
