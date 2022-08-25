@@ -2,7 +2,7 @@
 
 namespace app\api\middleware;
 
-use think\facade\Db;
+use app\common\model\Project as ProjectModel;
 
 /**
  * 访问控制
@@ -27,7 +27,7 @@ class AccessControl implements \Webman\MiddlewareInterface
         }
 
         // 校验access_key
-        $projectInfo = Db::name('project')->where('access_key', $access_key)->find();
+        $projectInfo = ProjectModel::getInfoAccessKey($access_key);
         if (empty($projectInfo)) {
             return api([], 400, 'illegal request');
         }

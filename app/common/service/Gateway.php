@@ -5,7 +5,6 @@ namespace app\common\service;
 use GatewayWorker\Lib\Gateway as GatewayClient;
 use support\Redis;
 use support\Log;
-use think\facade\Db;
 
 class Gateway
 {
@@ -62,7 +61,7 @@ class Gateway
 
             try {
                 // 记录推送详细信息
-                Db::name('record')->insert([
+                Redis::lPush('RecordCache', json_encode([
                     'day'          => date('Ymd', time()),
                     'project'      => $project_info['id'],
                     'channel'      => $channel,
@@ -70,7 +69,7 @@ class Gateway
                     'data'         => $data,
                     'subscription' => $subscription_count,
                     'create_time'  => get_date(),
-                ]);
+                ], 320));
             } catch (\Throwable $th) {
                 \Hsk99\WebmanException\RunException::report($th);
             }

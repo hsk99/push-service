@@ -203,7 +203,7 @@ class Task
 
                 // 执行推送
                 if (!empty($push_data)) {
-                    $project_info = ProjectModel::getPushInfo($project_id);
+                    $project_info = ProjectModel::getInfoId($project_id);
                     if (empty($project_info['web_hook'])) {
                         continue;
                     }
@@ -289,6 +289,58 @@ class Task
                 'request_param' => $data,
                 'exception'     => (string)$th,
             ]);
+        }
+    }
+
+    /**
+     * 缓存数据
+     *
+     * @author HSK
+     * @date 2022-08-25 10:09:32
+     *
+     * @return void
+     */
+    public static function setCache()
+    {
+        try {
+            $projectList = Db::name('project')->select();
+            foreach ($projectList as $item) {
+                Redis::hSet('ProjectCache:id', $item['id'], json_encode($item, 320));
+                Redis::hSet('ProjectCache:access_key', $item['access_key'], json_encode($item, 320));
+            }
+        } catch (\Throwable $th) {
+            \Hsk99\WebmanException\RunException::report($th);
+        }
+    }
+
+    /**
+     * 推送信息记录MySql
+     *
+     * @author HSK
+     * @date 2022-08-25 10:58:26
+     *
+     * @return void
+     */
+    public static function recordInsertMySql()
+    {
+        try {
+            $count = (int)Redis::lLen('RecordCache');
+            if (0 === $count) {
+                return;
+            } else if ($count > 500) {
+                $count = 500;
+            }
+
+            $recordList = Redis::lRange('RecordCache', 0, $count - 1);
+            $recordList = array_map(function ($item) {
+                return json_decode($item, true);
+            }, $recordList);
+
+            if (Db::name('record')->insertAll($recordList)) {
+                Redis::lTrim('RecordCache', $count, -1);
+            }
+        } catch (\Throwable $th) {
+            \Hsk99\WebmanException\RunException::report($th);
         }
     }
 }

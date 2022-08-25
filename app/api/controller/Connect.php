@@ -2,8 +2,8 @@
 
 namespace app\api\controller;
 
-use think\facade\Db;
 use support\Log;
+use app\common\model\Project as ProjectModel;
 
 class Connect
 {
@@ -36,8 +36,8 @@ class Connect
             }
 
             // 查询应用信息
-            $secret_key = Db::name('project')->where('access_key', $access_key)->value('secret_key');
-            if (empty($secret_key)) {
+            $projectInfo = ProjectModel::getInfoAccessKey($access_key);
+            if (empty($projectInfo)) {
                 // 记录日志
                 Log::channel('push')->info('Client authentication request failed', [
                     'request_param'  => request()->all(),
@@ -57,7 +57,7 @@ class Connect
             }
 
             // 生成认证签名
-            $signature = hash_hmac('sha256', 'hsk99:' . $socket_id . ':' . $channel . ':' . $channel_data, $secret_key, false);
+            $signature = hash_hmac('sha256', 'hsk99:' . $socket_id . ':' . $channel . ':' . $channel_data, $projectInfo['secret_key'], false);
 
             $data = [
                 'auth'         => $access_key . ':' . $signature,

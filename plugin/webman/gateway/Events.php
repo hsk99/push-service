@@ -3,9 +3,9 @@
 namespace plugin\webman\gateway;
 
 use GatewayWorker\Lib\Gateway;
-use think\facade\Db;
 use support\Redis;
 use support\Log;
+use app\common\model\Project as ProjectModel;
 
 class Events
 {
@@ -184,7 +184,7 @@ class Events
                     case 'private':
                         // {"event":"pusher:subscribe","data":{"auth":"b054014693241bcd9c26:10e3b628cb78e8bc4d1f44d47c9294551b446ae6ec10ef113d3d7e84e99763e6","channel":"private-channel"}}
                         $client_auth = $data['data']['auth'];
-                        $auth = $session['access_key'] . ':' . hash_hmac('sha256', 'hsk99:' . $client_id . ':' . $channel . ':' . $data['data']['channel_data'], $session['secret_key'], false);
+                        $auth = $session['access_key'] . ':' . hash_hmac('sha256', 'hsk99:' . $client_id . ':' . $channel . ':' . ($data['data']['channel_data'] ?? null), $session['secret_key'], false);
                         // {"event":"pusher:error","data":{"code":null,"message":"Received invalid JSON"}}
                         if ($client_auth !== $auth) {
                             static::sendToClient($client_id, static::error(null, 'Received invalid JSON ' . $auth));
@@ -275,7 +275,7 @@ class Events
     protected static function connectAuth(string $client_id, string $auth)
     {
         // 校验连接
-        if (!$projectInfo = Db::name('project')->where('access_key', $auth)->find()) {
+        if (!$projectInfo = ProjectModel::getInfoAccessKey($auth)) {
             Gateway::closeClient($client_id);
             static::info('Connection authentication parameter error');
             return;
@@ -562,7 +562,7 @@ class Events
             $subscription_count = (int)Redis::hGet('PushService:online:' . $project . ':subscription_count', $channel);
             --$subscription_count;
             // 记录推送详细信息
-            Db::name('record')->insert([
+            Redis::lPush('RecordCache', json_encode([
                 'day'          => date('Ymd', time()),
                 'project'      => str_replace('project-', '', $project),
                 'channel'      => $channel,
@@ -570,7 +570,7 @@ class Events
                 'data'         => $data,
                 'subscription' => $subscription_count < 0 ? 0 : $subscription_count,
                 'create_time'  => get_date(),
-            ]);
+            ], 320));
         } catch (\Throwable $th) {
             \Hsk99\WebmanException\RunException::report($th);
         }

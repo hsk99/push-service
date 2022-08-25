@@ -168,7 +168,7 @@ class Statistics
             }
 
             $data = Db::name('record')
-                ->field('DATE_FORMAT(create_time, "%Y-%m-%d %H:%i") AS time, COUNT(channel) AS channel, COUNT(event) AS event, COUNT(id) AS push')
+                ->field('DATE_FORMAT(create_time, "%H:%i") AS time, COUNT(channel) AS channel, COUNT(event) AS event, COUNT(id) AS push')
                 ->where($where)
                 ->group('time')
                 ->order('time', 'asc')
@@ -180,7 +180,7 @@ class Statistics
             $time = strtotime($date);
             $intervalCount = 1440;
             for ($i = 0; $i <= $intervalCount; $i++) {
-                $interval = date('Y-m-d H:i', $time + $i * 60);
+                $interval = date('H:i', $time + $i * 60);
 
                 if (empty($data[$interval])) {
                     $chartList['time'][$interval]    = $interval;

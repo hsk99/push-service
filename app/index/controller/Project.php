@@ -142,7 +142,7 @@ class Project
                 if (2 === (int)request()->input('status')) {
                     \app\common\service\Gateway::closed(
                         null,
-                        ProjectModel::getPushInfo(request()->input('id'))
+                        ProjectModel::getInfoId(request()->input('id'))
                     );
                 }
 
