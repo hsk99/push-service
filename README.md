@@ -44,7 +44,7 @@
 执行命令 `php start.php start`
 
 
-# 查看统计
+# 应用管理
 
 - 浏览器访问 `http://ip地址:8789`
 
@@ -58,3 +58,5 @@
 # 订阅发布
 
 - 使用 [push-client](https://github.com/hsk99/push-client "push-client") 插件
+
+- 相关文档，查看 [doc](doc) 目录
