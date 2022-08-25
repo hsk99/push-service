@@ -168,7 +168,7 @@ class Statistics
             }
 
             $data = Db::name('record')
-                ->field('DATE_FORMAT(create_time, "%H:%i") AS time, COUNT(channel) AS channel, COUNT(event) AS event, COUNT(id) AS push')
+                ->field('DATE_FORMAT(create_time, "%H:%i") AS time, COUNT(DISTINCT channel) AS channel, COUNT(DISTINCT event) AS event, COUNT(id) AS push')
                 ->where($where)
                 ->group('time')
                 ->order('time', 'asc')

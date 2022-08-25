@@ -307,7 +307,7 @@ class Events
             'event' => 'pusher:connection_established',
             'data'  => json_encode([
                 'socket_id'        => $client_id,
-                'activity_timeout' => 55
+                'activity_timeout' => 35
             ])
         ], JSON_UNESCAPED_UNICODE));
 
