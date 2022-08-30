@@ -1,6 +1,4 @@
 
-> **由于 Pusher 客户端类库限制不能修改 host 信息，只能使用 ` ws ` 协议**
-
 ```javascript
 // connect
 var id = Math.ceil(Math.random() * 100);
@@ -8,6 +6,7 @@ var pusher = new Pusher('ecc1dcdecd380a38cadc74cd9d0fb9bf', {
     forceTLS: false,
     wsHost: '127.0.0.1',
     wsPort: 8790,
+    // wssPort: 8790,
     // wsPath: '/wss',
     channelAuthorization: {
         endpoint: 'http://127.0.0.1:8789/api/connect/auth',
