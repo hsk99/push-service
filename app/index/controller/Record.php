@@ -26,10 +26,15 @@ class Record
     public function index(\support\Request $request)
     {
         if (request()->isAjax()) {
-            $page  = (int)request()->input('page', 1);
-            $limit = (int)request()->input('limit', 10);
+            $page       = (int)request()->input('page', 1);
+            $limit      = (int)request()->input('limit', 10);
+            $start_date = request()->input('start_date', date('Y-m-d H:i:s', time() - 86400 * 7));
+            $end_date   = request()->input('end_date', date('Y-m-d H:i:s'));
 
-            $where = [];
+            $startDate = date('Y-m-d H:i:s', strtotime($start_date));
+            $endDate   = date('Y-m-d H:i:s', strtotime($end_date));
+
+            $where[] = ['r.create_time', 'between', [$startDate, $endDate]];
 
             // 按应用ID查找
             if ($project = request()->input("project")) {

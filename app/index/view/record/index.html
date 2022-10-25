@@ -14,6 +14,20 @@
             <form class="layui-form" action="">
                 <div class="layui-form-item">
 
+                    <div class="layui-form-item layui-inline" id="date">
+                        <label class="layui-form-label">推送时间</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="start_date" value="{:date('Y-m-d H:i:s', time() - 86400 * 7)}" placeholder=""
+                                class="layui-input" id="start_date">
+                        </div>
+                        <div class="layui-input-inline" style="width: 10px;">
+                            <b>~</b>
+                        </div>
+                        <div class="layui-input-inline">
+                            <input type="text" name="end_date" value="{:date('Y-m-d H:i:s')}" placeholder="" class="layui-input"
+                                id="end_date">
+                        </div>
+                    </div>
                     <div class="layui-form-item layui-inline">
                         <label class="layui-form-label">应用</label>
                         <div class="layui-input-inline">
@@ -68,6 +82,14 @@
             let common = layui.common;
             let laydate = layui.laydate;
             let MODULE_PATH = "/{:request()->app}/record/";
+
+            laydate.render({
+                elem: "#date",
+                range: ['#start_date', '#end_date'],
+                type: 'datetime',
+                trigger: 'click',
+                format: 'yyyy-MM-dd HH:mm:ss',
+            });
 
             let cols = [
                 [{

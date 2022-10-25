@@ -214,7 +214,7 @@ class Task
                 // 应用订阅Client全部下线，清除数据
                 if (0 === (int)$client_count) {
                     unset(static::$_webHookData[$project_id]);
-                    return;
+                    continue;
                 }
                 // 更新缓存数据
                 else {
@@ -327,8 +327,8 @@ class Task
             $count = (int)Redis::lLen('RecordCache');
             if (0 === $count) {
                 return;
-            } else if ($count > 500) {
-                $count = 500;
+            } else if ($count > 100000) {
+                $count = 10000;
             }
 
             $recordList = Redis::lRange('RecordCache', 0, $count - 1);
@@ -336,7 +336,7 @@ class Task
                 return json_decode($item, true);
             }, $recordList);
 
-            if (Db::name('record')->insertAll($recordList)) {
+            if (Db::name('record')->limit(500)->insertAll($recordList)) {
                 Redis::lTrim('RecordCache', $count, -1);
             }
         } catch (\Throwable $th) {
