@@ -81,7 +81,7 @@ class Record
     {
         $data = RecordModel::where('id', request()->input('id'))->value('data');
         if ($data) {
-            $data = json_encode(json_decode($data, true), 448);
+            $data = is_array(json_decode($data, true)) ? json_encode(json_decode($data, true), 448) : $data;
             $data = str_replace(['\r\n', '\n'], "\n", $data);
             $data = htmlspecialchars($data);
         }
